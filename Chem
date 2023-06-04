@@ -1,0 +1,230 @@
+### HTML Code:
+
+```html
+
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+
+    <title>Chemical Equation Balancer</title>
+
+    <link rel="stylesheet" type="text/css" href="styles.css">
+
+  </head>
+
+  <body>
+
+    <header>
+
+      <h1>Chemical Equation Balancer</h1>
+
+    </header>
+
+    <main>
+
+      <form id="equation-form">
+
+        <label for="input-equation">Enter your chemical equation:</label>
+
+        <input type="text" id="input-equation" name="input-equation" placeholder="e.g. C6H12O6 + O2 -> CO2 + H2O">
+
+        <button type="submit" id="balance-button">Balance equation</button>
+
+        <h2>Results:</h2>
+
+        <p id="output-equation"></p>
+
+      </form>
+
+    </main>
+
+    <script src="app.js"></script>
+
+  </body>
+
+</html>
+
+```
+
+### CSS Code:
+
+```css
+
+body {
+
+  font-family: sans-serif;
+
+  color: #333;
+
+}
+
+header {
+
+  background-color: navy;
+
+  color: #fff;
+
+  padding: 1rem;
+
+}
+
+h1 {
+
+  margin: 0;
+
+}
+
+form {
+
+  margin-top: 2rem;
+
+  display: flex;
+
+  flex-direction: column;
+
+}
+
+label {
+
+  margin-bottom: 0.5rem;
+
+}
+
+input {
+
+  padding: 0.5rem;
+
+  margin-bottom: 1rem;
+
+}
+
+button {
+
+  padding: 0.5rem;
+
+  background-color: navy;
+
+  color: #fff;
+
+  border: none;
+
+  cursor: pointer;
+
+}
+
+h2 {
+
+  margin-top: 2rem;
+
+}
+
+p {
+
+  white-space: pre-wrap;
+
+}
+
+```
+
+### JavaScript Code:
+
+```javascript
+
+const equationForm = document.getElementById('equation-form');
+
+const inputEquation = document.getElementById('input-equation');
+
+const outputEquation = document.getElementById('output-equation');
+
+equationForm.addEventListener('submit', (event) => {
+
+  event.preventDefault();
+
+  // Get the input equation and split it into the reactants and products
+
+  const input = inputEquation.value;
+
+  const [reactantsString, productsString] = input.split('->');
+
+  // Split the reactants and products into separate components
+
+  const reactants = reactantsString.split('+').map((element) => element.trim());
+
+  const products = productsString.split('+').map((element) => element.trim());
+
+  // Set up an object to store the counts of each atom
+
+  const atoms = {};
+
+  // Step 1: loop through the reactants and increment the count for each atom
+
+  reactants.forEach((reactant) => {
+
+    const [countString, atom] = reactant.split(/([A-Za-z]+)/).filter(Boolean);
+
+    const count = countString ? Number(countString) : 1;
+
+    // If we haven't seen this atom before, add it to the object with a count of 0
+
+    if (!atoms[atom]) {
+
+      atoms[atom] = 0;
+
+    }
+
+    atoms[atom] += count;
+
+  });
+
+  // Step 2: loop through the products and decrement the count for each atom
+
+  products.forEach((product) => {
+
+    const [countString, atom] = product.split(/([A-Za-z]+)/).filter(Boolean);
+
+    const count = countString ? Number(countString) : 1;
+
+    // If we haven't seen this atom before, add it to the object with a count of 0
+
+    if (!atoms[atom]) {
+
+      atoms[atom] = 0;
+
+    }
+
+    atoms[atom] -= count;
+
+  });
+
+  // Step 3: build the balanced equation string
+
+  const balancedEquation = `${reactants.join(' + ')} -> ${products.join(' + ')}`;
+
+  let balanced = true;
+
+  let result = balancedEquation;
+
+  // Step 4: check if the equation is balanced by checking if all atom counts are 0
+
+  Object.keys(atoms).forEach((atom) => {
+
+    if (atoms[atom] !== 0) {
+
+      balanced = false;
+
+      result = `${result}\n${atom}: ${atoms[atom]}`;
+
+    }
+
+  });
+
+  // Step 5: set the output text to the balanced equation or the unbalanced equation with an error message
+
+  outputEquation.textContent = balanced ? balancedEquation : `Error: equation is unbalanced\n${result}`;
+
+});
+
+```
+
